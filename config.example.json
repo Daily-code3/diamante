@@ -1,0 +1,14 @@
+{
+    "accessToken": "YOUR_ACCESS_TOKEN_HERE",
+    "wallets": [
+        "0x_RECIPIENT_WALLET_ADDRESS_HERE"
+    ],
+    "delays": {
+        "min": 8,
+        "max": 18
+    },
+    "sendPerWallet": 2,
+    "amountPerSend": 1,
+    "continuous": false,
+    "maxIterations": 1
+}
