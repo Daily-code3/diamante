@@ -4,11 +4,14 @@
         "0x_RECIPIENT_WALLET_ADDRESS_HERE"
     ],
     "delays": {
-        "min": 8,
-        "max": 18
+        "min": 92.4,
+        "max": 143.7
+    },
+    "amount": {
+        "min": 0.0001,
+        "max": 0.001
     },
     "sendPerWallet": 2,
-    "amountPerSend": 1,
     "continuous": false,
     "maxIterations": 1
 }

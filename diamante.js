@@ -21,8 +21,8 @@ const HISTORY_URL = 'https://campapi.diamante.io/api/v1/transaction/history';
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 
 // Delays loaded from config.json
-let MIN_DELAY = 1.5;
-let MAX_DELAY = 4.0;
+let MIN_DELAY = 90.7;
+let MAX_DELAY = 168.6;
 
 // Colors
 const C = {

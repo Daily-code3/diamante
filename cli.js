@@ -174,9 +174,9 @@ const settingsMenu = async (config) => {
     const choice = await select({
         message: '',
         choices: [
-            { name: `delay           ${chalk.cyan((config.delays?.min || 1.5) + ' - ' + (config.delays?.max || 4) + 's')}`, value: 'delay' },
+            { name: `delay           ${chalk.cyan((config.delays?.min || 92.4) + ' - ' + (config.delays?.max || 143.7) + 's')}`, value: 'delay' },
             { name: `sends/wallet    ${chalk.cyan(config.sendPerWallet || 2)}`, value: 'sends' },
-            { name: `amount          ${chalk.cyan((config.amountPerSend || 1) + ' DIAM')}`, value: 'amount' },
+            { name: `amount          ${chalk.cyan((config.amount?.min || 0.0001) + ' - ' + (config.amount?.max || 0.001) + ' DIAM')}`, value: 'amount' },
             { name: `continuous      ${config.continuous ? chalk.green('ON') : chalk.gray('OFF')}`, value: 'continuous' },
             { name: `max rounds      ${chalk.cyan(config.maxIterations || 1)}`, value: 'maxIterations' },
             { name: chalk.gray('← back'), value: 'back' },
@@ -225,7 +225,8 @@ const runSending = async (config) => {
     const userId = extractUserId(token);
     const wallets = config.wallets || [];
     const sendsPerWallet = config.sendPerWallet || 2;
-    const amount = config.amountPerSend || 1;
+    const minAmount = config.amount?.min || 0.0001;
+    const maxAmount = config.amount?.max || 0.001;
     const minDelay = config.delays?.min || 92.4;
     const maxDelay = config.delays?.max || 143.7;
 
@@ -248,10 +249,11 @@ const runSending = async (config) => {
         [queue[i], queue[j]] = [queue[j], queue[i]];
     }
 
-    console.log(chalk.gray(`  sending ${queue.length} transactions...\n`));
+    console.log(chalk.gray(`  sending ${queue.length} transactions (${minAmount}-${maxAmount} DIAM each)...\n`));
 
     let success = 0;
     let failed = 0;
+    let totalAmount = 0;
 
     for (let i = 0; i < queue.length; i++) {
         const wallet = queue[i];
@@ -269,6 +271,11 @@ const runSending = async (config) => {
         }
 
         const spinner = ora({ text: `${shortAddr}`, prefixText: '  ' }).start();
+
+        // Random amount between min and max
+        const amount = minAmount + Math.random() * (maxAmount - minAmount);
+        const amountFormatted = amount.toFixed(4);
+
         let result = await sendTransaction(token, userId, wallet, amount);
 
         // Handle rate limit retries with countdown
@@ -286,8 +293,9 @@ const runSending = async (config) => {
 
         if (result.success) {
             success++;
+            totalAmount += amount;
             const shortHash = result.hash.length > 16 ? `${result.hash.slice(0, 10)}...` : result.hash;
-            spinner.succeed(chalk.green(`${shortAddr}  ✓ ${shortHash}`));
+            spinner.succeed(chalk.green(`${shortAddr}  ${amountFormatted} DIAM  ✓ ${shortHash}`));
         } else {
             failed++;
             spinner.fail(chalk.red(`${shortAddr}  ✗ ${result.error?.slice(0, 30) || 'Error'}`));
@@ -301,7 +309,7 @@ const runSending = async (config) => {
         process.stdout.write(`\r  ${bar}  ${pct}%  ${success}✓ ${failed}✗`);
     }
 
-    console.log('\n\n' + chalk.green(`  done! ${success}/${queue.length} successful\n`));
+    console.log('\n\n' + chalk.green(`  done! ${success}/${queue.length} successful | ${totalAmount.toFixed(4)} DIAM sent\n`));
     await sleep(3000);
 };
 
@@ -374,8 +382,14 @@ const main = async () => {
                         const val = await input({ message: 'sends per wallet', theme: { prefix: '  ' } });
                         if (val) { config.sendPerWallet = parseInt(val) || 2; saveConfig(config); }
                     } else if (sChoice === 'amount') {
-                        const val = await input({ message: 'amount per send', theme: { prefix: '  ' } });
-                        if (val) { config.amountPerSend = parseFloat(val) || 1; saveConfig(config); }
+                        const minVal = await input({ message: 'min amount (DIAM)', theme: { prefix: '  ' } });
+                        const maxVal = await input({ message: 'max amount (DIAM)', theme: { prefix: '  ' } });
+                        if (minVal || maxVal) {
+                            config.amount = config.amount || {};
+                            if (minVal) config.amount.min = parseFloat(minVal);
+                            if (maxVal) config.amount.max = parseFloat(maxVal);
+                            saveConfig(config);
+                        }
                     } else if (sChoice === 'maxIterations') {
                         const val = await input({ message: 'max rounds', theme: { prefix: '  ' } });
                         if (val) { config.maxIterations = parseInt(val) || 1; saveConfig(config); }
@@ -409,3 +423,4 @@ main().catch(e => {
     console.error(chalk.red(`\n  error: ${e.message}\n`));
     process.exit(1);
 });
+
