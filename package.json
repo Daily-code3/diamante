@@ -1,13 +1,11 @@
 {
-    "name": "diamante-sender",
-    "version": "1.0.0",
-    "description": "Diamante Campaign stress testing CLI - sends DIAM tokens",
+    "name": "diamante-cli",
+    "version": "2.0.0",
+    "description": "Diamante Campaign CLI - Send DIAM tokens with EVM private key",
     "main": "cli.js",
     "type": "module",
     "scripts": {
-        "start": "node cli.js",
-        "cli": "node cli.js",
-        "send": "node diamante.js"
+        "start": "node cli.js"
     },
     "author": "",
     "license": "MIT",
@@ -17,10 +15,9 @@
     "dependencies": {
         "@inquirer/prompts": "^8.1.0",
         "chalk": "^5.6.2",
+        "ethers": "^6.13.4",
         "gradient-string": "^3.0.0",
-        "ink": "^6.5.1",
-        "ink-select-input": "^6.2.0",
-        "ink-text-input": "^6.0.0",
-        "ora": "^9.0.0"
+        "ora": "^9.0.0",
+        "puppeteer": "^24.0.0"
     }
 }

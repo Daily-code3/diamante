@@ -1,117 +1,66 @@
-# 🔷 Diamante Campaign Transaction CLI
+# 🔷 Diamante Campaign CLI
 
-Stress-testing tool for the Diamante Testnet. Each wallet receives tokens multiple times per round, distributed randomly.
+Simple CLI tool to send DIAM tokens on the Diamante Campaign.
+
+## Features
+
+- ✅ **EVM Private Key** - Just paste your MetaMask/OKX wallet private key
+- ✅ **No Cookies** - No need to deal with expiring tokens or cf_clearance
+- ✅ **Multiple Wallets** - Send to multiple recipient wallets
+- ✅ **Random Amounts** - Configurable min/max amount per transaction
+- ✅ **Human Delays** - Random delays between transactions
 
 ## Quick Start
 
-1. **Install dependencies**:
-
 ```bash
+# Install dependencies
 npm install
-```
 
-2. **Run:**
-
-```bash
+# Run the CLI
 npm start
 ```
 
-## How It Works
+## Configuration
 
-If you have **3 wallets** with `sendPerWallet: 2`:
-- Creates 6 transactions per round (3 × 2)
-- Shuffles them randomly
-- Each wallet receives exactly 2 tokens, but **not consecutively**
+On first run, you'll be asked to paste your **EVM private key**. This is your MetaMask/OKX wallet private key that you use on the campaign.
 
-Example order:
-```
-Wallet A → 1 DIAM
-Wallet C → 1 DIAM
-Wallet B → 1 DIAM
-Wallet A → 1 DIAM  (2nd time)
-Wallet C → 1 DIAM  (2nd time)
-Wallet B → 1 DIAM  (2nd time)
-```
+### Get Your Private Key
 
-## Get Your Access Token
+**MetaMask:**
+1. Click the 3 dots menu → Account details
+2. Click "Show private key"
+3. Enter your password
+4. Copy the key
 
-1. Go to https://campaign.diamante.io/transactions
-2. Connect your wallet
-3. Open DevTools (F12) → **Application** → **Cookies**
-4. Copy the `access_token` value
+**OKX Wallet:**
+1. Settings → Security
+2. Export private key
+3. Copy the key
 
+⚠️ **Never share your private key with anyone!**
 
-| Field | Description |
-|-------|-------------|
-| `accessToken` | Your JWT token from the campaign site |
-| `sendPerWallet` | How many times each wallet receives tokens per round |
-| `amountPerSend` | DIAM amount per transaction |
-| `wallets` | Array of destination addresses |
-| `delays` | Min/max delay between transactions (seconds) |
-| `continuous` | Run multiple rounds |
-| `maxIterations` | Max rounds (if continuous) |
+## Settings
 
-## CLI Options
+- **Private Key** - Your EVM wallet private key
+- **Wallets** - Recipient wallet addresses (0x...)
+- **Delay** - Min/max seconds between transactions (default: 90-150s)
+- **Amount** - Min/max DIAM per transaction (default: 1-2)
+- **Sends/Wallet** - Number of sends per wallet per round (default: 2)
 
-```bash
-node diamante.js                                    # Use config.json
-node diamante.js -t TOKEN --to ADDR1,ADDR2 -s 2     # CLI args
-node diamante.js --config -c -i 5                   # 5 rounds from config
-node diamante.js --fast                             # Fast mode (0.5-1s)
-node diamante.js --history                          # View tx history
+## Config File
+
+Settings are saved in `config.json`:
+
+```json
+{
+    "privateKey": "0x...",
+    "wallets": ["0x...", "0x..."],
+    "delays": { "min": 90, "max": 150 },
+    "amount": { "min": 1, "max": 2 },
+    "sendPerWallet": 2
+}
 ```
 
-| Option | Description |
-|--------|-------------|
-| `--token, -t` | Access token |
-| `--to` | Comma-separated addresses |
-| `--amount` | Amount per send (default: 1) |
-| `--sends, -s` | Sends per wallet per round (default: 2) |
-| `--continuous, -c` | Run multiple rounds |
-| `--iterations, -i` | Max rounds |
-| `--fast, -f` | Fast mode (0.5-1s delays) |
-| `--history` | Show transaction history |
+## License
 
-## Output Example
-
-```
-══════════════════════════════════════════════════
-  🔷 DIAMANTE STRESS TEST
-══════════════════════════════════════════════════
-  Wallets:        3
-  Sends/wallet:   2
-  Amount/send:    1 DIAM
-  Total/round:    6 transactions (6 DIAM)
-  Mode:           Single round
-
-──────────────────────────────────────────────────
-  ROUND 1 | 6 transactions
-──────────────────────────────────────────────────
-
-   [0xfb9f6d71...] Send 1/2
-[14:30:15] ✅ Sent 1 DIAM → 0xfb9f6d71...f43e | 0x8a2b3c4d...7e3f
-   [█████░░░░░░░░░░░░░░░░░░░░] 17%
-
-   [0x12345678...] Send 1/2
-[14:30:18] ✅ Sent 1 DIAM → 0x12345678...5678 | 0x9b3c4d5e...8f4a
-   [██████████░░░░░░░░░░░░░░░] 33%
-
-══════════════════════════════════════════════════
-  📊 FINAL SUMMARY
-══════════════════════════════════════════════════
-  Total Txs:      6
-  Successful:     6 (100.0%)
-  Failed:         0
-  DIAM Sent:      6.00
-  Avg TPS:        0.42
-
-  Per-Wallet:
-    0xfb9f6d71...f43e: 2/2 ✓
-    0x12345678...5678: 2/2 ✓
-    0xabcdef12...1234: 2/2 ✓
-══════════════════════════════════════════════════
-```
-
-## Requirements
-
-- Node.js 18+ (uses native `fetch`)
+MIT

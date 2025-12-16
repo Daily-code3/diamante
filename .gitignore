@@ -1,18 +1,4 @@
-# Dependencies
 node_modules/
-
-# Config with sensitive token
 config.json
-package-lock.json
-
-# Test files
-*.cjs
-test-*.js
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Logs
 *.log
-npm-debug.log*
+.DS_Store
